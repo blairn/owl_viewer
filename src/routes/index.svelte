@@ -1,6 +1,7 @@
 <script>
 	import Banner from '$components/Banner.svelte'
 	import Side from '$components/Side.svelte'
+	import Timeline from '$components/Timeline.svelte'
 </script>
 
 <style lang="scss">
@@ -28,7 +29,7 @@
 </style>
 
 <Banner></Banner>
-
+<Timeline></Timeline>
 <Side></Side>
 
 <main>
