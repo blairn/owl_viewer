@@ -1,0 +1,143 @@
+[
+  {
+    "$group": {
+      "_id": {
+        "match_id": "$esports_match_id", 
+        "player_name": "$player_name", 
+        "hero_name": "$hero_name"
+      }, 
+      "match_id": {
+        "$first": "$esports_match_id"
+      }, 
+      "start_time": {
+        "$first": "$start_time"
+      }, 
+      "tournament_title": {
+        "$first": "$tournament_title"
+      }, 
+      "map_type": {
+        "$first": "$map_type"
+      }, 
+      "map_name": {
+        "$first": "$map_name"
+      }, 
+      "player_name": {
+        "$first": "$player_name"
+      }, 
+      "team_name": {
+        "$first": "$team_name"
+      }, 
+      "stat_name": {
+        "$first": "$stat_name"
+      }, 
+      "hero_name": {
+        "$first": "$hero_name"
+      }, 
+      "stats": {
+        "$addToSet": {
+          "name": "$stat_name", 
+          "value": "$stat_amount"
+        }
+      }
+    }
+  }, {
+    "$project": {
+      "match_id": "$match_id", 
+      "start_time": "$start_time", 
+      "tournament_title": "$tournament_title", 
+      "map_type": "$map_type", 
+      "map_name": "$map_name", 
+      "player_name": "$player_name", 
+      "team_name": "$team_name", 
+      "hero_name": "$hero_name", 
+      "tmp": {
+        "$arrayToObject": {
+          "$zip": {
+            "inputs": [
+              "$stats.name", "$stats.value"
+            ]
+          }
+        }
+      }
+    }
+  }, {
+    "$addFields": {
+      "tmp._id": "$_id", 
+      "tmp.match_id": "$match_id", 
+      "tmp.start_time": "$start_time", 
+      "tmp.tournament_title": "$tournament_title", 
+      "tmp.map_type": "$map_type", 
+      "tmp.map_name": "$map_name", 
+      "tmp.player_name": "$player_name", 
+      "tmp.team_name": "$team_name", 
+      "tmp.hero_name": "$hero_name"
+    }
+  }, {
+    "$replaceRoot": {
+      "newRoot": "$tmp"
+    }
+  }, {
+    "$lookup": {
+      "let": {
+        "map_name": "$map_name", 
+        "match_id": "$match_id", 
+        "team_name": "$team_name"
+      }, 
+      "from": "maps", 
+      "as": "map", 
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$and": [
+                {
+                  "$eq": [
+                    "$match_id", "$$match_id"
+                  ]
+                }, {
+                  "$eq": [
+                    "$map_name", "$$map_name"
+                  ]
+                }, {
+                  "$eq": [
+                    "$map_round", 1
+                  ]
+                }
+              ]
+            }
+          }
+        }, {
+          "$project": {
+            "won_map": {
+              "$eq": [
+                "$$team_name", "$map_winner"
+              ]
+            }, 
+            "won_match": {
+              "$eq": [
+                "$$team_name", "$match_winner"
+              ]
+            }, 
+            "game_number": "$game_number"
+          }
+        }
+      ]
+    }
+  }, {
+    "$replaceRoot": {
+      "newRoot": {
+        "$mergeObjects": [
+          {
+            "$arrayElemAt": [
+              "$map", 0
+            ]
+          }, "$$ROOT"
+        ]
+      }
+    }
+  }, {
+    "$project": {
+      "map": 0
+    }
+  }
+]
