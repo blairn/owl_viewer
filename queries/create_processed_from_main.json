@@ -1,0 +1,89 @@
+[
+    {
+      "$lookup": {
+        "from": "main", 
+        "let": {
+          "match_id": "$match_id", 
+          "player_name": "$player_name", 
+          "map_name": "$map_name"
+        }, 
+        "pipeline": [
+          {
+            "$match": {
+              "$expr": {
+                "$and": [
+                  {
+                    "$eq": [
+                      "$match_id", "$$match_id"
+                    ]
+                  }, {
+                    "$eq": [
+                      "$player_name", "$$player_name"
+                    ]
+                  }, {
+                    "$eq": [
+                      "$map_name", "$$map_name"
+                    ]
+                  }
+                ]
+              }
+            }
+          }, {
+            "$group": {
+              "_id": null, 
+              "Map Time Played": {
+                "$max": "$Time Played"
+              }
+            }
+          }
+        ], 
+        "as": "max_time"
+      }
+    }, {
+      "$replaceRoot": {
+        "newRoot": {
+          "$mergeObjects": [
+            {
+              "$arrayElemAt": [
+                "$max_time", 0
+              ]
+            }, "$$ROOT"
+          ]
+        }
+      }
+    }, {
+      "$replaceRoot": {
+        "newRoot": {
+          "$mergeObjects": [
+            {
+              "adjusted_played": {
+                "$divide": [
+                  "$Time Played", "$Map Time Played"
+                ]
+              }
+            }, "$$ROOT"
+          ]
+        }
+      }
+    }, {
+      "$replaceRoot": {
+        "newRoot": {
+          "$mergeObjects": [
+            {
+              "adjusted_won": {
+                "$cond": [
+                  "$won_map", "$adjusted_played", 0
+                ]
+              }
+            }, "$$ROOT"
+          ]
+        }
+      }
+    }, {
+      "$project": {
+        "max_time": 0
+      }
+    }, {
+      "$out": "processed"
+    }
+  ]

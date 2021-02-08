@@ -1,54 +1,51 @@
 <script>
 import {post_api} from './api.mjs'
 
+const format = (date) => new Date(date).toLocaleDateString('en-CA')
+
 </script>
 
 <style>
-
+  :root {
+    color:#eeeeee;
+  }
 </style>
 
 <div>
-{#await post_api("overwatch/pivoted",[
+{#await post_api("overwatch/maps",[
   {
     '$group': {
-      '_id': '$hero_name', 
-      'wins': {
-        '$sum': {
-          '$cond': [
-            '$won_map', 1, 0
-          ]
-        }
-      }, 
-      'games': {
-        '$sum': 1
+      '_id': {stage:'$stage', "year":{"$year":"$round_start_time"}}, 
+      'stage': {
+        '$first': '$stage'
+      },
+      'start': {
+        '$min': '$round_start_time'
+      },
+      'end': {
+        '$max': '$round_start_time'
+      },
+      'count': {
+        '$sum':1
       }
     }
   }, {
-    '$project': {
-      'winrate': {
-        '$divide': [
-          '$wins', '$games'
-        ]
-      }, 
-      'games': '$games', 
-      'wins': '$wins'
-    }
-  }, {
     '$sort': {
-      'winrate': 1
+      'start': 1
     }
   }
 ])}
-loading
-{:then results}
-  <table width=500px>
-  <tr><th>name</th><th>winrate</th><th>map wins</th><th>maps</th></tr>
-  {#each results as result (result._id)}
+
+{:then matches}
+  <table>
+  <tr><th>year</th><th>stage</th><th>start</th><th>end</th><th>count</th></tr>
+  {#each matches as match (match._id)}
     <tr>
-      <td>{result._id}</td>
-      <td>{result.winrate.toFixed(2)}</td>
-      <td>{result.wins}</td>
-      <td>{result.games}</td>
+      <td>{match._id.year}</td>
+      <td>{match._id.stage}</td>
+      <td>{format(match.start)}</td>
+      <td>{format(match.end)}</td>
+      <td>{match.count}</td>
     </tr>
   {/each}
   </table>

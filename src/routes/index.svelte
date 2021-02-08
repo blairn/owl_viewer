@@ -2,6 +2,7 @@
 	import Banner from '$components/Banner.svelte'
 	import Side from '$components/Side.svelte'
 	import Timeline from '$components/Timeline.svelte'
+	import MainTable from '$components/MainTable.svelte'
 </script>
 
 <style lang="scss">
@@ -30,7 +31,8 @@
 
 <Banner></Banner>
 <Timeline></Timeline>
-<Side></Side>
+<MainTable></MainTable>
+<!-- <Side></Side> -->
 
 <main>
 </main>

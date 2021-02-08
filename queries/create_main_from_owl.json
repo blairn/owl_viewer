@@ -4,7 +4,7 @@
       "_id": {
         "match_id": "$esports_match_id", 
         "player_name": "$player_name", 
-        "hero_name": "$hero_name",
+        "hero_name": "$hero_name", 
         "map_name": "$map_name"
       }, 
       "match_id": {
@@ -140,5 +140,7 @@
     "$project": {
       "map": 0
     }
+  }, {
+    "$out": "main"
   }
 ]
