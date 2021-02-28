@@ -10,18 +10,18 @@ import {post_api} from './api.mjs'
 </style>
 
 <div>
+
+
 {#await post_api("overwatch/processed",[
   {
     "$match": {
       hero_name:{$ne:"NULL"}
     }
-  },
-  {
+  }, {
     "$match": {
       adjusted_played:1
     }
-  },
-  {
+  }, {
     '$group': {
       '_id': '$hero_name', 
       'wins': {
@@ -60,13 +60,11 @@ loading
     "$match": {
       hero_name:{$ne:"NULL"}
     }
-  },
-  {
+  }, {
     "$match": {
       adjusted_played: {$ne:1}
     }
-  },
-  {
+  }, {
     '$group': {
       '_id': '$hero_name', 
       'wins': {
@@ -102,9 +100,8 @@ loading
     }
   }
 ])}
+loading
 {:then results2}
-  {console.log(results1, results2)}
-
     <table>
     <tr><th>name</th><th>winrate for whole match</th><th>winrate for partial match</th><th>full matches played %</th><th>% played in partual games</th></tr>
     {#each results1 as result1 (result1._id)}
