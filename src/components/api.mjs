@@ -23,3 +23,5 @@ export const get_api = (service) => fetch_json('GET', api_url(service))
 export const post_api = (service,q) => fetch_json('POST', api_url(service),q)
 
 export const normalise = (q) => bson.EJSON.serialize(q)
+
+export const queryRunnerFor = (uri) => (q) => fetch_csv('post', uri, q)

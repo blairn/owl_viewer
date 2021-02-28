@@ -3,6 +3,7 @@
 	import Side from '$components/Side.svelte'
 	import Timeline from '$components/Timeline.svelte'
 	import MainTable from '$components/MainTable.svelte'
+import Crossfilter from '../components/query/Crossfilter.svelte'
 </script>
 
 <style lang="scss">
@@ -30,8 +31,10 @@
 </style>
 
 <Banner></Banner>
-<Timeline></Timeline>
-<MainTable></MainTable>
+<Crossfilter db='overwatch' collection='processed'>
+	<Timeline></Timeline>
+	<MainTable></MainTable>
+</Crossfilter>
 <!-- <Side></Side> -->
 
 <main>
